@@ -42,6 +42,12 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
     - images/ic_user_avatar.jpg
+    - images/ic_collect.png
+    - images/ic_task.png
+    - images/ic_setting.png
+    - images/ic_wallet.png
+    - images/ic_browsing_history.png
+    - images/ic_reward.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
