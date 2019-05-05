@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snapshot/style/text_style.dart';
+import 'package:flutter_snapshot/common/search_page.dart';
+import 'package:flutter_snapshot/router/router.dart';
+import 'package:flutter_snapshot/style/color.dart';
+import 'package:flutter_snapshot/data/video.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_snapshot/test/test.dart';
 
 class MainPage extends StatelessWidget {
   @override
@@ -7,9 +13,9 @@ class MainPage extends StatelessWidget {
     return MaterialApp(
       title: "快拍Flutter版",
       theme: ThemeData(
-        primaryColor: Color(0xFF4CAF50),
-        primaryColorDark: Color(0xFF388E3C),
-        accentColor: Color(0xFFFF4081),
+        primaryColor: primaryColor,
+        primaryColorDark: primaryColorDark,
+        accentColor: primaryColor,
       ),
       home: Home(),
     );
@@ -26,7 +32,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin<Home> {
   List<Widget> _pages;
   List<Widget> _tabs;
   static const EdgeInsetsGeometry _tabPadding =
-      EdgeInsetsDirectional.fromSTEB(0.0, 15.0, 0.0, 15.0);
+      EdgeInsetsDirectional.only(top: 15.0, bottom: 15.0);
 
   @override
   void initState() {
@@ -61,18 +67,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin<Home> {
         title: Text("快拍"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            onPressed: null,
-          ),
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(FadeRouter(SearchPage()));
+              }),
           IconButton(
             icon: Icon(
               Icons.notifications,
               color: Colors.white,
             ),
-            onPressed: null,
+            onPressed: () {
+              Navigator.of(context).push(FadeRouter(SearchPage()));
+            },
           )
         ],
         bottom: TabBar(
@@ -96,10 +105,15 @@ class _CameraFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: accentColor,
       onPressed: () {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("确定打开相机?"),
-          action: SnackBarAction(label: "确定", onPressed: () {}),
+          action: SnackBarAction(
+            label: "确定",
+            onPressed: () {},
+            textColor: accentColor,
+          ),
         ));
       },
       child: Icon(Icons.camera_alt),
@@ -138,10 +152,10 @@ class _DrawerHeader extends StatelessWidget {
             children: <Widget>[
               CircleAvatar(
                 backgroundImage: AssetImage("images/ic_user_avatar.jpg"),
-                radius: 50,
+                radius: 50.0,
               ),
               Container(
-                margin: const EdgeInsets.fromLTRB(25.0, 0.0, 0.0, 0.0),
+                margin: const EdgeInsets.only(left: 25.0),
                 child: Column(
                   children: <Widget>[
                     Text(
@@ -151,7 +165,7 @@ class _DrawerHeader extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Container(
-                      margin: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                      margin: const EdgeInsets.only(top: 10.0),
                       child: Text(
                         "天蝎座",
                         style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -165,14 +179,13 @@ class _DrawerHeader extends StatelessWidget {
             ],
           ),
           Container(
-            child: Text(
-              "我是你们尊敬的提莫队长，噩梦人机再次来袭，享受被我支配的恐惧吧。。。哈哈哈。。。哈哈哈。。。哈哈哈。。。",
-              style: TextStyle(color: Colors.white),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            margin: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-          )
+              child: Text(
+                "我是你们尊敬的提莫队长，噩梦人机再次来袭，享受被我支配的恐惧吧。。。哈哈哈。。。哈哈哈。。。哈哈哈。。。",
+                style: TextStyle(color: Colors.white),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              margin: const EdgeInsets.only(top: 15.0))
         ],
       ),
     );
@@ -210,13 +223,14 @@ class _DrawerListTile extends StatelessWidget {
       leading: Image.asset(
         assetName,
         color: greyTextColorPrimary,
-        width: 33.0,
-        height: 33.0,
+        width: 30.0,
+        height: 30.0,
       ),
       title: Text(
         title,
         style: greyTextStylePrimary,
       ),
+      onTap: () {},
     );
   }
 }
@@ -226,9 +240,96 @@ class _HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<_HomePage> {
+class _HomePageState extends State<_HomePage>
+    with AutomaticKeepAliveClientMixin<_HomePage> {
+  GlobalKey<EasyRefreshState> _easyRefreshKey;
+  List<Video> _data;
+
+  @override
+  void initState() {
+    super.initState();
+    _easyRefreshKey = GlobalKey<EasyRefreshState>();
+    _data = List();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Text("sss");
+    return EasyRefresh(
+      key: _easyRefreshKey,
+      child: ListView.builder(
+          itemCount: _data.length,
+          itemBuilder: (context, index) {
+            return _buildItem(_data[index]);
+          }),
+      autoLoad: true,
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 3), () {
+          setState(() {
+            _data.clear();
+            _data.addAll(Test.builderData());
+          });
+        });
+      },
+      loadMore: () async {
+        await Future.delayed(const Duration(seconds: 3), () {
+          setState(() {
+            _data.addAll(Test.builderData());
+          });
+        });
+      },
+    );
   }
+
+  Widget _buildItem(Video video) {
+    return Card(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            child: FadeInImage.assetNetwork(
+              placeholder: 'images/placeholder.jpg',
+              image: video.cover,
+              fit: BoxFit.cover,
+              width: 352.0,
+              height: 220.0,
+            ),
+            borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(4.0),
+                topRight: const Radius.circular(4.0)),
+          ),
+          Container(
+            padding: const EdgeInsetsDirectional.fromSTEB(10.0, 5.0, 10.0, 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ClipRRect(
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'images/placeholder.jpg',
+                      image: video.avatar,
+                      fit: BoxFit.cover,
+                      width: 30.0,
+                      height: 30.0,
+                    ),
+                    borderRadius:
+                        BorderRadius.all(const Radius.circular(25.0))),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 10.0),
+                    child: Text(
+                      video.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: greyTextStyleLight,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

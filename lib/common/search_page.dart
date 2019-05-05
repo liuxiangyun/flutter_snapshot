@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Search extends StatelessWidget{
+class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text("");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("search"),
+      ),
+    );
   }
 }
