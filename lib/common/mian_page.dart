@@ -5,6 +5,8 @@ import 'package:flutter_snapshot/router/router.dart';
 import 'package:flutter_snapshot/style/color.dart';
 import 'package:flutter_snapshot/data/video.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_easyrefresh/material_header.dart';
+import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_snapshot/test/test.dart';
 
 class MainPage extends StatelessWidget {
@@ -15,7 +17,7 @@ class MainPage extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryColor,
         primaryColorDark: primaryColorDark,
-        accentColor: primaryColor,
+        accentColor: accentColor,
       ),
       home: Home(),
     );
@@ -242,14 +244,24 @@ class _HomePage extends StatefulWidget {
 
 class _HomePageState extends State<_HomePage>
     with AutomaticKeepAliveClientMixin<_HomePage> {
-  GlobalKey<EasyRefreshState> _easyRefreshKey;
+  GlobalKey<EasyRefreshState> _easyRefreshKey = GlobalKey<EasyRefreshState>();
+  GlobalKey<RefreshHeaderState> _headerKey = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshFooterState> _footerKey = GlobalKey<RefreshFooterState>();
   List<Video> _data;
 
   @override
   void initState() {
     super.initState();
-    _easyRefreshKey = GlobalKey<EasyRefreshState>();
     _data = List();
+    _refresh();
+  }
+
+  ///下拉刷新
+  void _refresh() {
+    //加异步是为了等渲染完成后（build执行完）再进行操作，即使延迟时间为0秒
+    Future.delayed(Duration(seconds: 0), () {
+      _easyRefreshKey.currentState.callRefresh();
+    });
   }
 
   @override
@@ -262,6 +274,14 @@ class _HomePageState extends State<_HomePage>
             return _buildItem(_data[index]);
           }),
       autoLoad: true,
+      behavior: ScrollOverBehavior(),
+      refreshHeader: MaterialHeader(
+        key: _headerKey,
+      ),
+      refreshFooter: BallPulseFooter(
+        color: accentColor,
+        key: _footerKey,
+      ),
       onRefresh: () async {
         await Future.delayed(const Duration(seconds: 3), () {
           setState(() {
