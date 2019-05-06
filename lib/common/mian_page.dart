@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snapshot/style/text_style.dart';
-import 'package:flutter_snapshot/common/search_page.dart';
+import 'package:flutter_snapshot/common/search.dart';
 import 'package:flutter_snapshot/router/router.dart';
 import 'package:flutter_snapshot/style/color.dart';
 import 'package:flutter_snapshot/data/video.dart';
@@ -74,16 +74,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin<Home> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.of(context).push(FadeRouter(SearchPage()));
+                showSearch(context: context, delegate: Search());
               }),
           IconButton(
             icon: Icon(
               Icons.notifications,
               color: Colors.white,
             ),
-            onPressed: () {
-              Navigator.of(context).push(FadeRouter(SearchPage()));
-            },
+            onPressed: () {},
           )
         ],
         bottom: TabBar(
@@ -108,6 +106,7 @@ class _CameraFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       backgroundColor: accentColor,
+      tooltip: "拍摄",
       onPressed: () {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("确定打开相机?"),
@@ -317,7 +316,7 @@ class _HomePageState extends State<_HomePage>
                 topRight: const Radius.circular(4.0)),
           ),
           Container(
-            padding: const EdgeInsetsDirectional.fromSTEB(10.0, 5.0, 10.0, 5.0),
+            padding: const EdgeInsetsDirectional.fromSTEB(10.0, 8.0, 10.0, 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
