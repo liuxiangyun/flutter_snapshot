@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_snapshot/test/test.dart';
 import 'package:flutter_snapshot/style/color.dart';
 import 'package:flutter_snapshot/style/text_style.dart';
-import 'package:flutter_snapshot/style/font_size.dart';
+import 'package:flutter_snapshot/data/video.dart';
+import 'package:flutter_snapshot/common/main_page.dart';
 
 class Search extends SearchDelegate<String> {
   ThemeData appBarTheme(BuildContext context) {
@@ -30,16 +31,23 @@ class Search extends SearchDelegate<String> {
         icon: Icon(Icons.arrow_back), onPressed: () => close(context, query));
   }
 
+  List<String> _getSuggestions() {
+    List<String> suggestionsData = List<String>();
+    if (query.isNotEmpty) {
+      suggestionsData =
+          Test.suggestionsData.where((name) => name.contains(query)).toList();
+    }
+    return suggestionsData;
+  }
+
   ///关键词联想
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> searchData =
-        Test.suggestionsData.where((name) => name.contains(query)).toList();
-
+    List<String> suggestionsData = _getSuggestions();
     return Card(
       child: ListView.builder(
         itemBuilder: (context, index) {
-          String name = searchData[index];
+          String name = suggestionsData[index];
           return ListTile(
             title: RichText(
               text: TextSpan(
@@ -62,7 +70,7 @@ class Search extends SearchDelegate<String> {
             ),
           );
         },
-        itemCount: searchData.length,
+        itemCount: suggestionsData.length,
       ),
     );
   }
@@ -70,6 +78,17 @@ class Search extends SearchDelegate<String> {
   ///搜索结果
   @override
   Widget buildResults(BuildContext context) {
-    return null;
+    List<String> suggestionsData = _getSuggestions();
+    List<Video> data = Test.builderData();
+    List<Video> result = List<Video>();
+    suggestionsData.forEach((name) {
+      result.addAll(data.where((video) => name == video.name).toList());
+    });
+
+    return ListView.builder(
+        itemCount: result.length,
+        itemBuilder: (context, index) {
+          return buildItem(result[index]);
+        });
   }
 }

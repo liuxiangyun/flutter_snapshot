@@ -8,7 +8,7 @@ class Video {
   ///封面
   String cover;
 
-  ///直播在线观看人数，或者视频总的观看次数
+  ///直播在线观看人数，或者视频观看人数
   BigInt heat;
 
   ///用户名

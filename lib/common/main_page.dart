@@ -270,7 +270,7 @@ class _HomePageState extends State<_HomePage>
       child: ListView.builder(
           itemCount: _data.length,
           itemBuilder: (context, index) {
-            return _buildItem(_data[index]);
+            return buildItem(_data[index]);
           }),
       autoLoad: true,
       behavior: ScrollOverBehavior(),
@@ -282,7 +282,7 @@ class _HomePageState extends State<_HomePage>
         key: _footerKey,
       ),
       onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 3), () {
+        await Future.delayed(const Duration(milliseconds: 1500), () {
           setState(() {
             _data.clear();
             _data.addAll(Test.builderData());
@@ -290,7 +290,7 @@ class _HomePageState extends State<_HomePage>
         });
       },
       loadMore: () async {
-        await Future.delayed(const Duration(seconds: 3), () {
+        await Future.delayed(const Duration(milliseconds: 1500), () {
           setState(() {
             _data.addAll(Test.builderData());
           });
@@ -299,56 +299,103 @@ class _HomePageState extends State<_HomePage>
     );
   }
 
-  Widget _buildItem(Video video) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          ClipRRect(
-            child: FadeInImage.assetNetwork(
-              placeholder: 'images/placeholder.jpg',
-              image: video.cover,
-              fit: BoxFit.cover,
-              width: 352.0,
-              height: 220.0,
-            ),
-            borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(4.0),
-                topRight: const Radius.circular(4.0)),
-          ),
-          Container(
-            padding: const EdgeInsetsDirectional.fromSTEB(10.0, 8.0, 10.0, 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ClipRRect(
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'images/placeholder.jpg',
-                      image: video.avatar,
-                      fit: BoxFit.cover,
-                      width: 30.0,
-                      height: 30.0,
-                    ),
-                    borderRadius:
-                        BorderRadius.all(const Radius.circular(25.0))),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: Text(
-                      video.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: greyTextStyleLight,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   bool get wantKeepAlive => true;
+}
+
+Color _getColor(int videoType) {
+  if (videoType == 1) {
+    return Colors.red;
+  } else {
+    return Colors.transparent;
+  }
+}
+
+Widget buildItem(Video video) {
+  return Card(
+    child: Column(
+      children: <Widget>[
+        Stack(
+          alignment: FractionalOffset(0.975, 0.025),
+          children: [
+            ClipRRect(
+              child: FadeInImage.assetNetwork(
+                placeholder: 'images/placeholder.jpg',
+                image: video.cover,
+                fit: BoxFit.cover,
+                width: 352.0,
+                height: 220.0,
+              ),
+              borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(4.0),
+                  topRight: const Radius.circular(4.0)),
+            ),
+            Icon(
+              Icons.live_tv,
+              color: _getColor(video.type),
+            ),
+          ],
+        ),
+        Container(
+          padding: const EdgeInsetsDirectional.fromSTEB(10.0, 8.0, 10.0, 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ClipRRect(
+                  child: FadeInImage.assetNetwork(
+                    placeholder: 'images/placeholder.jpg',
+                    image: video.avatar,
+                    fit: BoxFit.cover,
+                    width: 30.0,
+                    height: 30.0,
+                  ),
+                  borderRadius: BorderRadius.all(const Radius.circular(25.0))),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    video.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: greyTextStylePrimary,
+                  ),
+                ),
+              ),
+              Container(
+                child: Icon(
+                  Icons.person,
+                  size: 20.0,
+                  color: greyTextColorLight,
+                ),
+              ),
+              Container(
+                width: 50.0,
+                child: Text(
+                  video.heat.toString(),
+                  style: greyTextStyleLight,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 15.0),
+                width: 20.0,
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.comment,
+                  size: 18.0,
+                  color: greyTextColorLight,
+                ),
+              ),
+              Container(
+                child: Text(
+                  video.comment.toString(),
+                  style: greyTextStyleLight,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
