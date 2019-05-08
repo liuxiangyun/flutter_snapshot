@@ -16,7 +16,7 @@ class Test {
 
   static List<Video> builderData() {
     Video video = Video();
-    video.type = 0;
+    video.type = 1;
     video.id = 1000;
     video.cover =
         "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3895098953,169501593&fm=26&gp=0.jpg";
@@ -38,7 +38,7 @@ class Test {
     video1.comment = BigInt.from(3333);
 
     Video video2 = Video();
-    video2.type = 1;
+    video2.type = 0;
     video2.id = 1569;
     video2.cover =
         "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=555812620,3831885113&fm=26&gp=0.jpg";
@@ -71,7 +71,7 @@ class Test {
     video4.comment = BigInt.from(2706);
 
     Video video5 = Video();
-    video5.type = 0;
+    video5.type = 1;
     video5.id = 3658;
     video5.cover =
         "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3138411912,3156137241&fm=11&gp=0.jpg";

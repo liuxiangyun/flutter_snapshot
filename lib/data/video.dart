@@ -1,3 +1,4 @@
+
 class Video {
   ///type : 0 视频  1 直播
   int type;
